@@ -98,7 +98,18 @@ us12 <- atheism %>%
 <li> False </li>
 </ol>
 ```{r perc-atheist-us12}
-# type your code for Question 7 here, and Knit
+
+us12n <- us12 %>%
+  summarise(count = n())
+
+us12atheist <- us12 %>%
+  filter(response == "atheist") %>%
+  summarise(count = n())
+
+perc_atheist_us12 <- us12atheist/us12n
+
+perc_atheist_us12
+
 
 ```
 
@@ -136,6 +147,12 @@ Although formal confidence intervals and hypothesis tests don't show up in the r
 ```{r me-perc-atheist-us12}
 # type your code for Question 8 here, and Knit
 
+highEnd = 0.0634
+p_hat = 0.0499
+me = highEnd - p_hat
+me
+
+
 ```
 
 <div id="exercise">
@@ -144,6 +161,19 @@ Although formal confidence intervals and hypothesis tests don't show up in the r
 ```{r me-perc-atheist-other-countries}
 # type your code for the Exercise here, and Knit
 
+# Let's do Turkey, since I've lived there:
+
+turkey12 <- atheism %>%
+  filter(nationality == "Turkey" , atheism$year == "2012")
+
+inference(y = response, data = turkey12, statistic = "proportion", type = "ci", method = "theoretical", success = "atheist")
+
+# ...and Canada, since it's a good comparable nation to the U.S.
+
+canada12 <- atheism %>%
+  filter(nationality == "Canada" , atheism$year == "2012")
+
+inference(y = response, data = canada12, statistic = "proportion", type = "ci", method = "theoretical", success = "atheist")
 ```
 
 ## How does the proportion affect the margin of error?

@@ -130,7 +130,7 @@ If the conditions for inference are reasonable, we can either calculate the stan
 inference(y = response, data = us12, statistic = "proportion", type = "ci", method = "theoretical", success = "atheist")
 ```
 
-Note that since the goal is to construct an interval estimate for a proportion, it's necessary to specify what constitutes a ``success'', which here is a response of `atheist`.
+Note that since the goal is to construct an interval estimate for a proportion, it's necessary to specify what constitutes a "success", which here is a response of `atheist`.
 
 Although formal confidence intervals and hypothesis tests don't show up in the report, suggestions of inference appear at the bottom of page 7: "In general, the error margin for surveys of this kind is $\pm$ 3-5% at 95% confidence."
 
@@ -164,14 +164,14 @@ me
 # Let's do Turkey, since I've lived there:
 
 turkey12 <- atheism %>%
-  filter(nationality == "Turkey" , atheism$year == "2012")
+  filter(nationality == "Turkey" , year == "2012")
 
 inference(y = response, data = turkey12, statistic = "proportion", type = "ci", method = "theoretical", success = "atheist")
 
 # ...and Canada, since it's a good comparable nation to the U.S.
 
 canada12 <- atheism %>%
-  filter(nationality == "Canada" , atheism$year == "2012")
+  filter(nationality == "Canada" , year == "2012")
 
 inference(y = response, data = canada12, statistic = "proportion", type = "ci", method = "theoretical", success = "atheist")
 ```
@@ -213,6 +213,17 @@ Answer the following two questions using the `inference` function. As always, wr
 ```{r spain-05-12}
 # type your code for Question 10 here, and Knit
 
+spainDiff <- atheism %>%
+  filter(nationality == "Spain")
+
+inference(y = response, x = as.factor(year), data = spainDiff,
+          method = "theoretical", type = "ci", 
+          statistic = "proportion", success = "atheist")
+
+inference(y = response, x = as.factor(year), data = spainDiff,
+          method = "theoretical", type = "ht", alternative = "twosided", null = 0,
+          statistic = "proportion", success = "atheist")
+
 ```
 
 11. True / False: There is convincing evidence that the United States has seen a change in its atheism index between 2005 and 2012.
@@ -222,6 +233,13 @@ Answer the following two questions using the `inference` function. As always, wr
 </ol>
 ```{r us-05-12}
 # type your code for Question 11 here, and Knit
+
+usDiff <- atheism %>%
+  filter(nationality == "United States")
+
+inference(y = response, x = as.factor(year), data = usDiff,
+          method = "theoretical", type = "ht", alternative = "twosided", null = 0,
+          statistic = "proportion", success = "atheist")
 
 ```
 
@@ -236,6 +254,11 @@ Answer the following two questions using the `inference` function. As always, wr
 ```{r type1}
 # type your code for Question 12 here, and Knit
 
+numCountries = 39
+confLevel = 0.95
+numType_One_Errors = numCountries * (1 - confLevel)
+numType_One_Errors
+
 ```
 
 13. Suppose you're hired by the local government to estimate the proportion of residents that attend a religious service on a weekly basis. According to the guidelines, the estimate must have a margin of error no greater than 1% with 95% confidence. You have no idea what to expect for $p$. How many people would you have to sample to ensure that you are within the guidelines? <br><br> *Hint:* Refer to your plot of the relationship between $p$ and margin of error. Do not use the data set to answer this question.
@@ -248,6 +271,20 @@ Answer the following two questions using the `inference` function. As always, wr
 ```{r sample-size}
 # type your code for Question 13 here, and Knit
 
+me = 0.01      # margin of errro given as desired parameter
+confLevel = 0.95     # confidence level of 95% also given
+z_star = 1.96        # the Z* level associated with 95% confidence
+se = me/z_star       # since margin of error = Z* x the Standard Error
+p_safe = 0.5         # with the actual pop proportion unknown, we play it safe
+                     # and use a est. proportion that maximizes our error level
+
+# And since me = z_star*se = 1.96 * se
+# and since se = sqrt(p * (1-p) / n), then
+
+n = (p_safe * (1-p_safe))/(se^2)
+
+n
+
 ```
 
 <div id="license">
@@ -255,3 +292,5 @@ This is a product of OpenIntro that is released under a [Creative Commons
 Attribution-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-sa/3.0).
 This lab was written for OpenIntro by Andrew Bray and Mine &Ccedil;etinkaya-Rundel.
 </div>
+
+
